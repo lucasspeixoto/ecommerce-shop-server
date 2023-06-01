@@ -59,7 +59,7 @@ public class StateService {
 
     }
 
-    public List<StateVO> findByCountryCode(Long code) {
+    public List<StateVO> findByCountryCode(String code) {
         logger.info("Finding states from specific code");
 
         var states = StateMapper.parseListObjects(repository.findByCountryCode(code), StateVO.class);

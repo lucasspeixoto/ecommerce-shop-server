@@ -23,7 +23,8 @@ import java.util.Objects;
         "dateCreated",
         "lastUpdated",
         "newProduct",
-        "rating"
+        "rating",
+        "categoryId"
 })
 public class ProductVO extends RepresentationModel<ProductVO> implements Serializable {
 
@@ -54,6 +55,8 @@ public class ProductVO extends RepresentationModel<ProductVO> implements Seriali
     private boolean newProduct;
 
     private Double rating;
+
+    private Integer categoryId;
 
     public ProductVO() {}
 
@@ -151,6 +154,14 @@ public class ProductVO extends RepresentationModel<ProductVO> implements Seriali
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     @Override

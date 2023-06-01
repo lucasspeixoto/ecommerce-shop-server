@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface StateRepository extends JpaRepository<State, Long> {
 
-    @Query("SELECT s from State s WHERE s.country.id = :code")
-    List<State> findByCountryCode(@Param("code") Long code);
+    @Query("SELECT s from State s WHERE s.country.code = :code")
+    List<State> findByCountryCode(@Param("code") String code);
 }

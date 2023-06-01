@@ -6,10 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +27,9 @@ public class User implements UserDetails, Serializable {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "account_non_expired")
     private Boolean accountNonExpired;
@@ -52,7 +52,21 @@ public class User implements UserDetails, Serializable {
     )
     private List<Permission> permissions;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Order> orders = new HashSet<>();
+
     public User() {
+    }
+
+    public void add(Order order) {
+        if (order != null) {
+            if (this.orders == null) {
+                this.orders = new HashSet<>();
+            }
+            this.orders.add(order);
+            order.setCustomer(this);
+
+        }
     }
 
     //* Necessário implementar por convenção
@@ -167,6 +181,18 @@ public class User implements UserDetails, Serializable {
 
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
     }
 
     @Override

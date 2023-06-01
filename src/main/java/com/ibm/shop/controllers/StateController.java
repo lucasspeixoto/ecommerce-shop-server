@@ -11,14 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/states")
+@RequestMapping(value = "/states")
 @Tag(name = "State", description = "Endpoints for Managing States")
 public class StateController {
 
@@ -157,7 +156,7 @@ public class StateController {
                     )
             }
     )
-    public ResponseEntity<List<StateVO>> findByCountryCode(@PathVariable(value = "code") Long code) throws Exception {
+    public ResponseEntity<List<StateVO>> findByCountryCode(@PathVariable(value = "code") String code) throws Exception {
 
         return ResponseEntity.ok(service.findByCountryCode(code));
     }

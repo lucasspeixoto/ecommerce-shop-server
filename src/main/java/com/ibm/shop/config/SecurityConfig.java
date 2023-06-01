@@ -66,17 +66,17 @@ public class SecurityConfig {
                                         "/auth/signin",
                                         "/auth/refresh/**",
                                         "/swagger-ui/**",
+                                        "/products/**",
+                                        "/states/**",
+                                        "/countries/**",
+                                        "/categories/**",
                                         "/v3/api-docs/**"
                                 ).permitAll()
                                 .requestMatchers("/api/**").authenticated()
                                 .requestMatchers("/users").denyAll()
-
-
                 )
-
                 .apply(new JwtConfigurer(tokenProvider))
                 .and()
                 .build();
-
     }
 }

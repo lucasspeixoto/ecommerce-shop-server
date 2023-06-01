@@ -3,6 +3,7 @@ package com.ibm.shop.services;
 import com.ibm.shop.controllers.ProductController;
 import com.ibm.shop.data.vo.ProductVO;
 import com.ibm.shop.entities.Product;
+import com.ibm.shop.exceptions.RequiredObjectIsNullException;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
 import com.ibm.shop.mapper.ProductMapper;
 import com.ibm.shop.repositories.ProductRepository;
@@ -64,6 +65,7 @@ public class ProductService {
         ).withSelfRel();
 
         return assembler.toModel(productsVos, link);
+
     }
 
     public ProductVO findById(Long id) {
@@ -90,5 +92,67 @@ public class ProductService {
 
         return productViewObject;
 
+    }
+
+    public ProductVO update(ProductVO product) {
+
+        if (product == null) throw new RequiredObjectIsNullException();
+
+        logger.info("Updating a product");
+
+        var entity = this.repository.findById(product.getKey()).orElseThrow(
+                () -> new ResourceNotFoundException("No record founds for this ID!")
+        );
+
+        entity.setSku(product.getSku());
+        entity.setName(product.getName());
+        entity.setDescription(product.getDescription());
+        entity.setUnitPrice(product.getUnitPrice());
+        entity.setImageUrl(product.getImageUrl());
+        entity.setActive(product.isActive());
+        entity.setUnitsInStock(product.getUnitsInStock());
+        entity.setNewProduct(product.isNewProduct());
+        entity.setRating(product.getRating());
+
+        var mapper = new ModelMapper();
+
+        mapper.createTypeMap(Product.class, ProductVO.class)
+                .addMapping(Product::getId, ProductVO::setKey);
+
+        var productVo = ProductMapper.parseObject(
+                this.repository.save(entity),
+                ProductVO.class, mapper
+        );
+
+        productVo
+                .add(linkTo(methodOn(ProductController.class)
+                        .findById(productVo.getKey())
+                ).withSelfRel());
+
+        return productVo;
+
+    }
+
+    public ProductVO create(ProductVO product) {
+        if (product == null) throw new RequiredObjectIsNullException();
+
+        logger.info("Creating a product");
+
+        var mapper = new ModelMapper();
+
+        mapper.createTypeMap(Product.class, ProductVO.class)
+                .addMapping(Product::getId, ProductVO::setKey);
+
+
+        var entity = ProductMapper.parseObject(product, Product.class, mapper);
+
+        var productVO = ProductMapper.parseObject(this.repository.save(entity), ProductVO.class, mapper);
+
+        productVO
+                .add(linkTo(methodOn(ProductController.class)
+                        .findById(productVO.getKey())
+                ).withSelfRel());
+
+        return productVO;
     }
 }

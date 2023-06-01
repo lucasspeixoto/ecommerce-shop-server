@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/countries")
+@RequestMapping(value = "/countries")
 @Tag(name = "Country", description = "Endpoints for Managing Countries")
 public class CountryController {
 
