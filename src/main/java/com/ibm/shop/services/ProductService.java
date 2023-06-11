@@ -7,16 +7,15 @@ import com.ibm.shop.exceptions.RequiredObjectIsNullException;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
 import com.ibm.shop.mapper.ProductMapper;
 import com.ibm.shop.repositories.ProductRepository;
-import com.ibm.shop.utils.MediaType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.logging.Logger;
 
@@ -34,37 +33,16 @@ public class ProductService {
     @Autowired
     private PagedResourcesAssembler<ProductVO> assembler;
 
-    @GetMapping(
-            produces = {MediaType.APPLICATION_JSON}
-    )
+    @Autowired
+    private PagedResourcesAssembler<Product> assembler_;
+
     public PagedModel<EntityModel<ProductVO>> findAll(Pageable pageable) throws Exception {
 
         logger.info("Finding all products!");
 
         var products = repository.findAll(pageable);
 
-        var mapper = new ModelMapper();
-
-        mapper.createTypeMap(Product.class, ProductVO.class)
-                .addMapping(Product::getId, ProductVO::setKey);
-
-        var productsVos = products.map(
-                product -> ProductMapper.parseObject(product, ProductVO.class, mapper)
-        );
-
-        productsVos.map(product -> product
-                .add(
-                        linkTo(methodOn(ProductController.class)
-                                .findById(product.getKey())
-                        ).withSelfRel()
-                )
-        );
-
-        Link link = linkTo(methodOn(ProductController.class)
-                .findAll(pageable)
-        ).withSelfRel();
-
-        return assembler.toModel(productsVos, link);
+        return buildPagedModelWithMapper(pageable, products);
 
     }
 
@@ -119,10 +97,7 @@ public class ProductService {
         mapper.createTypeMap(Product.class, ProductVO.class)
                 .addMapping(Product::getId, ProductVO::setKey);
 
-        var productVo = ProductMapper.parseObject(
-                this.repository.save(entity),
-                ProductVO.class, mapper
-        );
+        var productVo = ProductMapper.parseObject(this.repository.save(entity), ProductVO.class, mapper);
 
         productVo
                 .add(linkTo(methodOn(ProductController.class)
@@ -154,5 +129,46 @@ public class ProductService {
                 ).withSelfRel());
 
         return productVO;
+    }
+
+    public PagedModel<EntityModel<ProductVO>> findByCategoryId(Long id, Pageable pageable) throws Exception {
+        logger.info("Finding products by specific category id");
+
+        var products = repository.findByCategoryId(id, pageable);
+
+        return buildPagedModelWithMapper(pageable, products);
+    }
+
+    public PagedModel<EntityModel<ProductVO>> findByNameContaining(String name, Pageable pageable) throws Exception {
+        logger.info("Finding products by specific category id");
+
+        var products = repository.findByNameContaining(name, pageable);
+
+        return buildPagedModelWithMapper(pageable, products);
+    }
+
+    private PagedModel<EntityModel<ProductVO>> buildPagedModelWithMapper(Pageable pageable, Page<Product> products) throws Exception {
+        var mapper = new ModelMapper();
+
+        mapper.createTypeMap(Product.class, ProductVO.class)
+                .addMapping(Product::getId, ProductVO::setKey);
+
+        var productsVos = products.map(
+                product -> ProductMapper.parseObject(product, ProductVO.class, mapper)
+        );
+
+        productsVos.map(product -> product
+                .add(
+                        linkTo(methodOn(ProductController.class)
+                                .findById(product.getKey())
+                        ).withSelfRel()
+                )
+        );
+
+        Link link = linkTo(methodOn(ProductController.class)
+                .findAll(pageable)
+        ).withSelfRel();
+
+        return assembler.toModel(productsVos, link);
     }
 }

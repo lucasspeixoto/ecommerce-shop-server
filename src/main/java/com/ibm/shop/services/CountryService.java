@@ -7,7 +7,6 @@ import com.ibm.shop.mapper.CountryMapper;
 import com.ibm.shop.repositories.CountryRepository;
 import com.ibm.shop.utils.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
