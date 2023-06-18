@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("Finding one person by name " + username + "!");
 
-        var user = this.userRepository.findByUsername(username);
+        var user = this.userRepository.findByUserName(username);
 
         if (user != null) {
             return user;

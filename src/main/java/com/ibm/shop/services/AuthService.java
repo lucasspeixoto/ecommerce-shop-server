@@ -33,7 +33,7 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
 
-            var user = repository.findByUsername(username);
+            var user = repository.findByUserName(username);
 
             var tokenResponse = new TokenVO();
 
@@ -50,7 +50,7 @@ public class AuthService {
 
     @SuppressWarnings("rawtypes")
     public ResponseEntity refreshToken(String username, String refreshToken) {
-        var user = repository.findByUsername(username);
+        var user = repository.findByUserName(username);
 
         var tokenResponse = new TokenVO();
 
