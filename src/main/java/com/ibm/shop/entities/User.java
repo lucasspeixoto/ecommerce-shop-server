@@ -1,122 +1,55 @@
 package com.ibm.shop.entities;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails, Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_name", unique = true)
-    private String userName;
+    private String name;
 
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "email")
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "account_non_expired")
-    private Boolean accountNonExpired;
+    @Column(nullable = false)
+    private String password;
 
-    @Column(name = "account_non_locked")
-    private Boolean accountNonLocked;
-
-    @Column(name = "credentials_non_expired")
-    private Boolean credentialsNonExpired;
-
-    @Column(name = "enabled")
-    private Boolean enabled;
-
-    //fetch = FetchType.EAGER: Ao carregar User ja carrega as permissions. A outra opção do Hibernation é o LAZY
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_permission",
-            joinColumns = {@JoinColumn(name = "id_user")},
-            inverseJoinColumns = {@JoinColumn(name = "id_permission")}
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    private List<Permission> permissions;
+    private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Order> orders = new HashSet<>();
 
     public User() {
     }
 
-    public void add(Order order) {
-        if (order != null) {
-            if (this.orders == null) {
-                this.orders = new HashSet<>();
-            }
-            this.orders.add(order);
-            order.setCustomer(this);
-
-        }
-    }
-
-    //* Necessário implementar por convenção
-    public List<String> getRoles() {
-        List<String> roles = new ArrayList<>();
-
-        for (Permission permission : permissions) {
-            roles.add(permission.getDescription());
-        }
-
-        return roles;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.permissions;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
+    public User(Long id, String name, String username, String email, String password) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.email = email;
         this.password = password;
     }
 
-    @Override
-    public String getUsername() {
-        return this.userName;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -127,60 +60,20 @@ public class User implements UserDetails, Serializable {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public Boolean getAccountNonExpired() {
-        return accountNonExpired;
-    }
-
-    public void setAccountNonExpired(Boolean accountNonExpired) {
-        this.accountNonExpired = accountNonExpired;
-    }
-
-    public Boolean getAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    public void setAccountNonLocked(Boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
-
-    public Boolean getCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-
-    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -191,15 +84,19 @@ public class User implements UserDetails, Serializable {
         this.email = email;
     }
 
-    public Set<Order> getOrders() {
-        return orders;
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return getId().equals(user.getId());
+        return Objects.equals(getId(), user.getId());
     }
 
     @Override
@@ -207,3 +104,4 @@ public class User implements UserDetails, Serializable {
         return Objects.hash(getId());
     }
 }
+

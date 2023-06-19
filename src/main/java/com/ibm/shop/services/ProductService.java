@@ -3,7 +3,6 @@ package com.ibm.shop.services;
 import com.ibm.shop.controllers.ProductController;
 import com.ibm.shop.data.vo.ProductVO;
 import com.ibm.shop.entities.Product;
-import com.ibm.shop.exceptions.RequiredObjectIsNullException;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
 import com.ibm.shop.mapper.ProductMapper;
 import com.ibm.shop.repositories.ProductRepository;
@@ -52,7 +51,7 @@ public class ProductService {
         var entity = repository
                 .findById(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("No records found for this id")
+                        () -> new ResourceNotFoundException("Product", "id", id)
                 );
 
         var mapper = new ModelMapper();
@@ -74,12 +73,10 @@ public class ProductService {
 
     public ProductVO update(ProductVO product) {
 
-        if (product == null) throw new RequiredObjectIsNullException();
-
         logger.info("Updating a product");
 
         var entity = this.repository.findById(product.getKey()).orElseThrow(
-                () -> new ResourceNotFoundException("No record founds for this ID!")
+                () -> new ResourceNotFoundException("Product", "id", product.getKey())
         );
 
         entity.setSku(product.getSku());
@@ -109,7 +106,6 @@ public class ProductService {
     }
 
     public ProductVO create(ProductVO product) {
-        if (product == null) throw new RequiredObjectIsNullException();
 
         logger.info("Creating a product");
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -116,7 +117,7 @@ public class ProductController {
         return ResponseEntity.ok().body(selectedProduct);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(
             value = "/api/update",
             consumes = {MediaType.APPLICATION_JSON},
@@ -159,6 +160,7 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(
             value = "/api/create",
             consumes = {MediaType.APPLICATION_JSON},

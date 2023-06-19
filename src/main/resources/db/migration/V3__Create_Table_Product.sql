@@ -12,7 +12,5 @@ CREATE TABLE IF NOT EXISTS `product` (
   `category_id` BIGINT(20) NOT NULL,
   `new_product` tinyint(1) DEFAULT 0,
   `rating` DECIMAL(13,2) DEFAULT 4.5,
-  PRIMARY KEY (`id`),
-  KEY `fk_category` (`category_id`),
-  CONSTRAINT `fk_category` FOREIGN KEY (`category_id`) REFERENCES `product_category` (`id`)
+  PRIMARY KEY (`id`)
 );

@@ -5,11 +5,9 @@ import com.ibm.shop.data.vo.StateVO;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
 import com.ibm.shop.mapper.StateMapper;
 import com.ibm.shop.repositories.StateRepository;
-import com.ibm.shop.utils.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,7 +44,7 @@ public class StateService {
 
         var entity = repository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this id"));
+                .orElseThrow(() -> new ResourceNotFoundException("State", "id", id));
 
         StateVO stateViewObject = StateMapper.parseObject(entity, StateVO.class);
 

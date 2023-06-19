@@ -1,3 +1,3 @@
-INSERT INTO `users` (`user_name`, `full_name`, `password`, `email`, `account_non_expired`, `account_non_locked`, `credentials_non_expired`, `enabled`) VALUES
-	('lucas', 'Lucas Peixoto', 'e9b71f0fb6ac3a55e8bee01015d9b44d49643b31ce5f1e5c7dc7c832a55f1530a3922d6fe77c3531', 'lspeixotodev@gmail.com',  b'1', b'1', b'1', b'1'),
-	('liana', 'Liana Fernandes', '442e5eec9dea31ee880ff1ce2193d3a9f564666ebe4395dbc0e7d87b83e6db688bf3b76635d6f030', 'lianacgf@hotmai.com', b'1', b'1', b'1', b'1');
+INSERT INTO `users` (`id`, `email`, `name`, `password`, `username`) VALUES
+	(1, 'lspeixotodev@gmail.com', 'Lucas Peixoto', '$2a$10$bd/mCJerWHxIHxRSdCXk3.YVenBj4XI2X99oKfoC7wnNSXU8sIb.O', 'lucas'),
+	(2, 'admin@admin.com', 'Admin', '$2a$10$5vRT6BF51vrpV8aeDO39fOfhphUc3li5KEEkosKWWcn2Ug27HnjpG', 'admin');

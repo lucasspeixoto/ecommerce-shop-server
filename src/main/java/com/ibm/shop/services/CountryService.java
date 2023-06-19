@@ -46,7 +46,7 @@ public class CountryService {
 
         var entity = repository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
 
         CountryVO countryViewObject = CountryMapper.parseObject(entity, CountryVO.class);
 

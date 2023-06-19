@@ -64,7 +64,7 @@ public class ProductCategoryService {
 
         var entity = repository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
         ProductCategoryVO productViewObject = ProductCategoryMapper.parseObject(entity, ProductCategoryVO.class);
 
