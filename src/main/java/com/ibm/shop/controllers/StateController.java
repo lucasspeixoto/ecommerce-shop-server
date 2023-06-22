@@ -1,23 +1,27 @@
 package com.ibm.shop.controllers;
 
+import com.ibm.shop.data.response.StateResponse;
 import com.ibm.shop.data.vo.StateVO;
 import com.ibm.shop.services.StateService;
 import com.ibm.shop.utils.MediaType;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/states")
+@RequestMapping(value = "/api/states")
 @Tag(name = "State", description = "Endpoints for Managing States")
 public class StateController {
 
@@ -63,9 +67,9 @@ public class StateController {
                     )
             }
     )
-    public ResponseEntity<List<StateVO>> findAll() throws Exception {
+    public ResponseEntity<StateResponse> findAll(Pageable pageable) throws Exception {
 
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @GetMapping(

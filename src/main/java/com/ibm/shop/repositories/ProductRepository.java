@@ -1,6 +1,5 @@
 package com.ibm.shop.repositories;
 
-import com.ibm.shop.data.vo.ProductVO;
 import com.ibm.shop.entities.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

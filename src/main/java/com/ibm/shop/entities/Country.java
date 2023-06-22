@@ -1,6 +1,5 @@
 package com.ibm.shop.entities;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -13,8 +12,7 @@ public class Country {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "code")
     private String code;
@@ -26,11 +24,11 @@ public class Country {
     @JsonIgnore
     private List<State> states;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -62,7 +60,7 @@ public class Country {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Country country)) return false;
-        return getId() == country.getId();
+        return Objects.equals(getId(), country.getId());
     }
 
     @Override

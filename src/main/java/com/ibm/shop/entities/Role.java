@@ -1,25 +1,23 @@
-package com.ibm.shop.data.vo;
+package com.ibm.shop.entities;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.*;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
-@JsonPropertyOrder({"id", "name"})
-public class StateVO implements Serializable {
+@Entity
+@Table(name = "roles")
+public class Role {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    public StateVO() {
+    public Role() {
     }
 
-    public StateVO(Long id, String name) {
+    public Role(Long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -32,7 +30,6 @@ public class StateVO implements Serializable {
         this.id = id;
     }
 
-
     public String getName() {
         return name;
     }
@@ -44,8 +41,8 @@ public class StateVO implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StateVO stateVO)) return false;
-        return Objects.equals(getId(), stateVO.getId());
+        if (!(o instanceof Role role)) return false;
+        return Objects.equals(getId(), role.getId());
     }
 
     @Override
@@ -53,3 +50,4 @@ public class StateVO implements Serializable {
         return Objects.hash(getId());
     }
 }
+

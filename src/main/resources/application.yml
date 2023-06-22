@@ -1,21 +1,24 @@
 cors:
-  originPatterns: http://localhost:4200,http://localhost:3000,http://localhost:8080
+  originPatterns: http://localhost:4200,http://localhost:3000,http://localhost:8080,https://erudio.com.br
+  allowed-origins: http://localhost:4200,http://localhost:3000,http://localhost:8080,https://erudio.com.br
+  allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+  max-age: 3600
+  allowed-headers: "Requestor-Type"
+  exposed-headers: "X-Get-Header"
+security:
+  jwt:
+    token:
+      secret-key: daf66e01593f61a15b857cf433aae03a005812b31234e149036bcc8dee755dbb
+      expire-lenght: 604800000
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ibm-shop-ecommerce?useTimezone=true&serverTimezone=UTC
     username: ecommerceapp
     password: ecommerceapp
-  security:
-    user:
-      password: ecommerceapp
-    jwt:
-      token:
-        secret-key: 53cr37
-        expire-lenght: 3600000
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

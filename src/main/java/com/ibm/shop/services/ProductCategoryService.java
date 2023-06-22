@@ -1,24 +1,23 @@
 package com.ibm.shop.services;
 
-import com.ibm.shop.controllers.ProductCategoryController;
+import com.ibm.shop.data.response.ProductCategoryResponse;
 import com.ibm.shop.data.vo.ProductCategoryVO;
+import com.ibm.shop.entities.Product;
+import com.ibm.shop.entities.ProductCategory;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
-import com.ibm.shop.mapper.ProductCategoryMapper;
+import com.ibm.shop.mapper.IbmShopMapper;
 import com.ibm.shop.repositories.ProductCategoryRepository;
 import com.ibm.shop.utils.MediaType;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
 import java.util.logging.Logger;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class ProductCategoryService {
@@ -31,49 +30,62 @@ public class ProductCategoryService {
     @Autowired
     private PagedResourcesAssembler<ProductCategoryVO> assembler;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping(
             produces = {MediaType.APPLICATION_JSON}
     )
-    public PagedModel<EntityModel<ProductCategoryVO>> findAll(Pageable pageable) throws Exception {
+    public ProductCategoryResponse findAll(Pageable pageable) throws Exception {
 
         logger.info("Finding all categories!");
 
-        var products = repository.findAll(pageable);
+        Page<ProductCategory> pageableCategories = repository.findAll(pageable);
 
-        var productsVos = products.map(
-                product -> ProductCategoryMapper.parseObject(product, ProductCategoryVO.class)
-        );
+        List<ProductCategory> pageableProductCategoryContent = pageableCategories.getContent();
 
-        productsVos.map(product -> product
-                .add(
-                        linkTo(methodOn(ProductCategoryController.class)
-                                .findById(product.getKey())
-                        ).withSelfRel()
-                )
-        );
+        List<ProductCategoryVO> content = convertEntitiesToDTOs(pageableProductCategoryContent);
 
-        Link link = linkTo(methodOn(ProductCategoryController.class)
-                .findAll(pageable)
-        ).withSelfRel();
+        ProductCategoryResponse productCategoryResponse = new ProductCategoryResponse();
 
-        return assembler.toModel(productsVos, link);
+        productCategoryResponse.setContent(content);
+        productCategoryResponse.setPageNo(pageableCategories.getNumber());
+        productCategoryResponse.setPageSize(pageableCategories.getSize());
+        productCategoryResponse.setTotalElements(pageableCategories.getTotalElements());
+        productCategoryResponse.setTotalPages(pageableCategories.getTotalPages());
+        productCategoryResponse.setLast(pageableCategories.isLast());
+
+        return productCategoryResponse;
     }
 
     public ProductCategoryVO findById(Long id) {
         logger.info("Finding a category by Id");
 
-        var entity = repository
+        ProductCategory entity = repository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
-        ProductCategoryVO productViewObject = ProductCategoryMapper.parseObject(entity, ProductCategoryVO.class);
-
-        productViewObject
-                .add(linkTo(methodOn(ProductCategoryController.class)
-                        .findById(id)
-                ).withSelfRel());
-
-        return productViewObject;
+        return convertEntityToDTO(entity);
 
     }
+
+    //! Mapper methods ---------------------------------------------------------------------------
+    private ProductCategoryVO convertEntityToDTO(ProductCategory entity) {
+        return IbmShopMapper.parseObject(entity, ProductCategoryVO.class, modelMapper);
+    }
+
+    private ProductCategory convertDTOToEntity(ProductCategoryVO dto) {
+        return IbmShopMapper.parseObject(dto, ProductCategory.class, modelMapper);
+    }
+
+    private List<ProductCategoryVO> convertEntitiesToDTOs(List<ProductCategory> entities) {
+        return IbmShopMapper.parseListObjects(entities, ProductCategoryVO.class, modelMapper);
+    }
+
+    private List<ProductCategory> convertDTOsToEntities(List<ProductCategoryVO> dto) {
+        return IbmShopMapper.parseListObjects(dto, ProductCategory.class, modelMapper);
+    }
+    //! --------------------------------------------------------------------------- Mapper methods
+
+
 }

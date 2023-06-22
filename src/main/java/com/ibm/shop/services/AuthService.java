@@ -1,65 +1,82 @@
 package com.ibm.shop.services;
 
-import com.ibm.shop.data.vo.security.AccountCredentialsVO;
-import com.ibm.shop.data.vo.security.TokenVO;
-import com.ibm.shop.exceptions.UnauthorizedException;
+import com.ibm.shop.data.vo.LoginVO;
+import com.ibm.shop.data.vo.RegisterVO;
+import com.ibm.shop.entities.Role;
+import com.ibm.shop.entities.User;
+import com.ibm.shop.exceptions.IbmShopApiException;
+import com.ibm.shop.repositories.RoleRepository;
 import com.ibm.shop.repositories.UserRepository;
-import com.ibm.shop.security.jwt.JwtTokenProvider;
+import com.ibm.shop.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class AuthService {
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository repository;
+    private RoleRepository roleRepository;
 
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity signin(AccountCredentialsVO data) {
-        try {
-            var username = data.getUsername();
-            var password = data.getPassword();
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password));
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-            var user = repository.findByUserName(username);
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-            var tokenResponse = new TokenVO();
+    public String login(LoginVO loginVO) {
 
-            if (user != null) {
-                tokenResponse = tokenProvider.createAccessToken(username, user.getRoles());
-            } else {
-                throw new UsernameNotFoundException("Username " + username + " not found!");
-            }
-            return ResponseEntity.ok(tokenResponse);
-        } catch (Exception e) {
-            throw new UnauthorizedException("Invalid username/password supplied!");
-        }
+        Authentication authentication = authenticationManager
+                .authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginVO.getUsernameOrEmail(),
+                                loginVO.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return jwtTokenProvider.generateToken(authentication);
     }
 
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity refreshToken(String username, String refreshToken) {
-        var user = repository.findByUserName(username);
+    public String register(RegisterVO registerVO) {
 
-        var tokenResponse = new TokenVO();
-
-        if (user != null) {
-            tokenResponse = tokenProvider.refreshToken(refreshToken);
-        } else {
-            throw new UsernameNotFoundException("Username " + username + " not found!");
+        // Check if this user already exists
+        if (userRepository.existsByUsername(registerVO.getUsername())) {
+            throw new IbmShopApiException(HttpStatus.BAD_REQUEST, "Username is already exists!");
         }
 
-        return ResponseEntity.ok(tokenResponse);
+        // Check if this user email already exists
+        if (userRepository.existsByEmail(registerVO.getEmail())) {
+            throw new IbmShopApiException(HttpStatus.BAD_REQUEST, "Email is already exists!");
+        }
+
+        User user = new User();
+
+        user.setName(registerVO.getName());
+        user.setEmail(registerVO.getEmail());
+        user.setUsername(registerVO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerVO.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName("ROLE_USER").get();
+        roles.add(userRole);
+        user.setRoles(roles);
+
+        userRepository.save(user);
+
+        return "User registered successfully!.";
     }
 }

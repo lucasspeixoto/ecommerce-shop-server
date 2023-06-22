@@ -9,11 +9,5 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `status` varchar(128) DEFAULT NULL,
   `date_created` datetime(6) DEFAULT NULL,
   `last_updated` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_billing_address_id` (`billing_address_id`),
-  UNIQUE KEY `UK_shipping_address_id` (`shipping_address_id`),
-  KEY `K_user_id` (`user_id`),
-  CONSTRAINT `FK_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `FK_billing_address_id` FOREIGN KEY (`billing_address_id`) REFERENCES `address` (`id`),
-  CONSTRAINT `FK_shipping_address_id` FOREIGN KEY (`shipping_address_id`) REFERENCES `address` (`id`)
+  PRIMARY KEY (`id`)
 );

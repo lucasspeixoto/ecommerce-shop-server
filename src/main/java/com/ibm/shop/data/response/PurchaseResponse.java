@@ -1,4 +1,4 @@
-package com.ibm.shop.data.vo;
+package com.ibm.shop.data.response;
 
 import java.util.Objects;
 

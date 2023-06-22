@@ -1,45 +1,54 @@
 package com.ibm.shop.services;
 
+import com.ibm.shop.data.vo.StateVO;
+import com.ibm.shop.data.vo.UserVO;
+import com.ibm.shop.entities.State;
+import com.ibm.shop.entities.User;
+import com.ibm.shop.exceptions.ResourceNotFoundException;
+import com.ibm.shop.mapper.IbmShopMapper;
 import com.ibm.shop.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository repository;
 
-    /**
-     * Quando injetamos através do construtor, isso obrigatóriamente
-     * torna esse campo obrigatório, gerando problemas caso não
-     * seja injetado. Ao injetar como parâmetros, como o @Autowired, a
-     * injeção só vai ocorrer quando necessário, o que pode ocasionar um
-     * NullPointerException
-     */
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public UserVO findByUsernameOrEmail(String usernameOrEmail) {
+        User user = this.repository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).orElseThrow(
+                () -> new ResourceNotFoundException("User", "email", 1L)
+        );
+
+        return this.convertEntityToDTO(user);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("Finding one person by name " + username + "!");
-
-        var user = this.userRepository.findByUserName(username);
-
-        if (user != null) {
-            return user;
-
-        } else {
-            throw new UsernameNotFoundException("Username" + username + "not found");
-        }
+    //! Mapper methods ---------------------------------------------------------------------------
+    private UserVO convertEntityToDTO(User entity) {
+        return IbmShopMapper.parseObject(entity, UserVO.class, modelMapper);
     }
+
+    private User convertDTOToEntity(UserVO postDTO) {
+        return IbmShopMapper.parseObject(postDTO, User.class, modelMapper);
+    }
+
+    private List<UserVO> convertEntitiesToDTOs(List<User> entities) {
+        return IbmShopMapper.parseListObjects(entities, UserVO.class, modelMapper);
+    }
+
+    private List<User> convertDTOsToEntities(List<UserVO> states) {
+        return IbmShopMapper.parseListObjects(states, User.class, modelMapper);
+    }
+    //! --------------------------------------------------------------------------- Mapper methods
+
 }
-
