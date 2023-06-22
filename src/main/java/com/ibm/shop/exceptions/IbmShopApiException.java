@@ -2,18 +2,18 @@ package com.ibm.shop.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class BlogAPIException extends RuntimeException {
+public class IbmShopApiException extends RuntimeException {
 
-    private HttpStatus status;
+    private final HttpStatus status;
 
-    private String message;
+    private final String message;
 
-    public BlogAPIException(HttpStatus status, String message) {
+    public IbmShopApiException(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }
 
-    public BlogAPIException(String message, HttpStatus status, String message1) {
+    public IbmShopApiException(String message, HttpStatus status, String message1) {
         super(message);
         this.status = status;
         this.message = message1;

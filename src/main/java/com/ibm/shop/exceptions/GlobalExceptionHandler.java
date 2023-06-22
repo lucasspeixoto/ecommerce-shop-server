@@ -1,6 +1,7 @@
 package com.ibm.shop.exceptions;
 
 import com.ibm.shop.data.vo.ErrorDetails;
+import com.ibm.shop.utils.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -22,7 +23,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<ErrorDetails> handleResourceNotFoundException(
             ResourceNotFoundException exception,
             WebRequest webRequest
@@ -37,12 +38,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 status.value()
         );
 
-        return ResponseEntity.status(status).body(errorDetails);
+        return ResponseEntity
+                .status(status)
+                .contentType(org.springframework.http.MediaType.valueOf(MediaType.APPLICATION_JSON))
+                .body(errorDetails);
     }
 
-    @ExceptionHandler(BlogAPIException.class)
+    @ExceptionHandler(IbmShopApiException.class)
     public ResponseEntity<ErrorDetails> handleBlogAPIException(
-            BlogAPIException exception,
+            IbmShopApiException exception,
             WebRequest webRequest
     ) {
 
@@ -55,7 +59,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 status.value()
         );
 
-        return ResponseEntity.status(status).body(errorDetails);
+        return ResponseEntity
+                .status(status)
+                .contentType(org.springframework.http.MediaType.valueOf(MediaType.APPLICATION_JSON))
+                .body(errorDetails);
     }
 
     @Override
@@ -88,7 +95,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 status.value()
         );
 
-        return ResponseEntity.status(status).body(errorDetails);
+        return ResponseEntity
+                .status(status)
+                .contentType(org.springframework.http.MediaType.valueOf(MediaType.APPLICATION_JSON))
+                .body(errorDetails);
 
     }
 
@@ -107,7 +117,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 status.value()
         );
 
-        return ResponseEntity.status(status).body(errorDetails);
+        return ResponseEntity
+                .status(status)
+                .contentType(org.springframework.http.MediaType.valueOf(MediaType.APPLICATION_JSON))
+                .body(errorDetails);
     }
 
 }

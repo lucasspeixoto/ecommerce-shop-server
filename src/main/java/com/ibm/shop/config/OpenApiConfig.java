@@ -9,11 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    /**
-     * Um bean é um objecto instanciado, montado e gerenciado
-     * pelo Spring AOC Container
-     */
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

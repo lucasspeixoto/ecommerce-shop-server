@@ -1,4 +1,4 @@
-package com.ibm.shop.data.vo;
+package com.ibm.shop.data.response;
 
 import java.util.Objects;
 
@@ -13,6 +13,7 @@ public class JWTAuthResponse {
     public JWTAuthResponse(String accessToken, String tokenType) {
         this.accessToken = accessToken;
         this.tokenType = tokenType;
+
     }
 
     public String getAccessToken() {

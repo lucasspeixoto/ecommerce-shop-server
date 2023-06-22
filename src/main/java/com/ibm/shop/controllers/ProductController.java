@@ -1,5 +1,6 @@
 package com.ibm.shop.controllers;
 
+import com.ibm.shop.data.response.ProductResponse;
 import com.ibm.shop.data.vo.ProductVO;
 import com.ibm.shop.services.ProductService;
 import com.ibm.shop.utils.MediaType;
@@ -11,14 +12,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/products")
+@RequestMapping(value = "/api/products")
 @Tag(name = "Product", description = "Endpoints for Managing Products")
 public class ProductController {
 
@@ -64,7 +64,7 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<PagedModel<EntityModel<ProductVO>>> findAll(Pageable pageable) throws Exception {
+    public ResponseEntity<ProductResponse> findAll(Pageable pageable) throws Exception {
 
         return ResponseEntity.ok(service.findAll(pageable));
     }
@@ -119,7 +119,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(
-            value = "/api/update",
+            value = "/update",
             consumes = {MediaType.APPLICATION_JSON},
             produces = {MediaType.APPLICATION_JSON})
     @Operation(
@@ -160,9 +160,9 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(
-            value = "/api/create",
+            value = "/create",
             consumes = {MediaType.APPLICATION_JSON},
             produces = {MediaType.APPLICATION_JSON})
     @Operation(
@@ -244,7 +244,7 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<PagedModel<EntityModel<ProductVO>>> findByCategoryId(@PathVariable(value = "id") Long id, Pageable pageable) throws Exception {
+    public ResponseEntity<ProductResponse> findByCategoryId(@PathVariable(value = "id") Long id, Pageable pageable) throws Exception {
 
         return ResponseEntity.ok(service.findByCategoryId(id, pageable));
     }
@@ -290,8 +290,57 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<PagedModel<EntityModel<ProductVO>>> findByNameContaining(@PathVariable(value = "name") String name, Pageable pageable) throws Exception {
+    public ResponseEntity<ProductResponse> findByNameContaining(@PathVariable(value = "name") String name, Pageable pageable) throws Exception {
 
         return ResponseEntity.ok(service.findByNameContaining(name, pageable));
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete a product by Id",
+            description = "Service for delete a product by id",
+            tags = {"Product"},
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(
+                                                    schema = @Schema(implementation = ProductVO.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            description = "Bad Request",
+                            responseCode = "400",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Unauthorized",
+                            responseCode = "401",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Not Found",
+                            responseCode = "404",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error",
+                            responseCode = "500",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<ProductVO> delete(@PathVariable(name = "id") Long id) {
+
+        ProductVO response = service.delete(id);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

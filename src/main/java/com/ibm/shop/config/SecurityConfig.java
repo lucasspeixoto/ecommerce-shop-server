@@ -1,5 +1,6 @@
 package com.ibm.shop.config;
 
+import com.ibm.shop.repositories.UserRepository;
 import com.ibm.shop.security.JwtAuthenticationEntryPoint;
 import com.ibm.shop.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -31,6 +33,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter authenticationFilter;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -46,18 +51,22 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         (authorize) ->
-                                //authorize.anyRequest().authenticated()
-                                authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                                authorize
                                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                                        .requestMatchers(
+                                                "/swagger-ui/**",
+                                                "/v3/api-docs/**"
+                                        ).permitAll()
                                         .anyRequest().authenticated()
-                ).exceptionHandling( exception -> exception
+                ).exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
-                ).sessionManagement( session -> session
+                ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 

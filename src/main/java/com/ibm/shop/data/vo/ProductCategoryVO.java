@@ -1,10 +1,8 @@
 package com.ibm.shop.data.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.ibm.shop.entities.Product;
-import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,13 +10,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @JsonPropertyOrder({"id", "categoryName"})
-public class ProductCategoryVO extends RepresentationModel<ProductCategoryVO> implements Serializable {
+public class ProductCategoryVO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("id")
-    private Long key;
+    private Long id;
 
     private String categoryName;
 
@@ -44,24 +41,23 @@ public class ProductCategoryVO extends RepresentationModel<ProductCategoryVO> im
         this.products = products;
     }
 
-    public Long getKey() {
-        return key;
+    public Long getId() {
+        return id;
     }
 
-    public void setKey(Long key) {
-        this.key = key;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ProductCategoryVO that)) return false;
-        if (!super.equals(o)) return false;
-        return Objects.equals(getKey(), that.getKey());
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getKey());
+        return Objects.hash(getId());
     }
 }

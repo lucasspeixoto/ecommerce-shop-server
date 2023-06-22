@@ -1,3 +1,10 @@
+cors:
+  originPatterns: http://localhost:4200,http://localhost:3000,http://localhost:8080,https://erudio.com.br
+  allowed-origins: http://localhost:4200,http://localhost:3000,http://localhost:8080,https://erudio.com.br
+  allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+  max-age: 3600
+  allowed-headers: "Requestor-Type"
+  exposed-headers: "X-Get-Header"
 security:
   jwt:
     token:

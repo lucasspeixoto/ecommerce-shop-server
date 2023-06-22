@@ -1,19 +1,20 @@
 package com.ibm.shop.services;
 
-import com.ibm.shop.controllers.StateController;
+import com.ibm.shop.data.response.StateResponse;
 import com.ibm.shop.data.vo.StateVO;
+import com.ibm.shop.entities.State;
 import com.ibm.shop.exceptions.ResourceNotFoundException;
-import com.ibm.shop.mapper.StateMapper;
+import com.ibm.shop.mapper.IbmShopMapper;
 import com.ibm.shop.repositories.StateRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Logger;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class StateService {
@@ -26,48 +27,67 @@ public class StateService {
     @Autowired
     private PagedResourcesAssembler<StateVO> assembler;
 
-    public List<StateVO> findAll() throws Exception {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public StateResponse findAll(Pageable pageable) throws Exception {
 
         logger.info("Finding all states!");
 
-        var states = StateMapper.parseListObjects(repository.findAll(), StateVO.class);
+        Page<State> pageableStates = repository.findAll(pageable);
 
-        states
-                .stream()
-                .forEach(p -> p.add(linkTo(methodOn(StateController.class).findById(p.getKey())).withSelfRel()));
+        List<State> pageableStatesContent = pageableStates.getContent();
 
-        return states;
+        List<StateVO> content = convertEntitiesToDTOs(pageableStatesContent);
+
+        StateResponse stateResponse = new StateResponse();
+
+        stateResponse.setContent(content);
+        stateResponse.setPageNo(pageableStates.getNumber());
+        stateResponse.setPageSize(pageableStates.getSize());
+        stateResponse.setTotalElements(pageableStates.getTotalElements());
+        stateResponse.setTotalPages(pageableStates.getTotalPages());
+        stateResponse.setLast(pageableStates.isLast());
+
+        return stateResponse;
     }
 
     public StateVO findById(Long id) {
         logger.info("Finding a state by Id");
 
-        var entity = repository
+        State state = repository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("State", "id", id));
 
-        StateVO stateViewObject = StateMapper.parseObject(entity, StateVO.class);
-
-        stateViewObject
-                .add(linkTo(methodOn(StateController.class)
-                        .findById(id)
-                ).withSelfRel());
-
-        return stateViewObject;
+        return this.convertEntityToDTO(state);
 
     }
 
     public List<StateVO> findByCountryCode(String code) {
         logger.info("Finding states from specific code");
 
-        var states = StateMapper.parseListObjects(repository.findByCountryCode(code), StateVO.class);
+        List<State> states = repository.findByCountryCode(code);
 
-        states
-                .stream()
-                .forEach(p -> p.add(linkTo(methodOn(StateController.class).findById(p.getKey())).withSelfRel()));
-
-        return states;
+        return this.convertEntitiesToDTOs(states);
 
     }
+
+    //! Mapper methods ---------------------------------------------------------------------------
+    private StateVO convertEntityToDTO(State entity) {
+        return IbmShopMapper.parseObject(entity, StateVO.class, modelMapper);
+    }
+
+    private State convertDTOToEntity(StateVO postDTO) {
+        return IbmShopMapper.parseObject(postDTO, State.class, modelMapper);
+    }
+
+    private List<StateVO> convertEntitiesToDTOs(List<State> entities) {
+        return IbmShopMapper.parseListObjects(entities, StateVO.class, modelMapper);
+    }
+
+    private List<State> convertDTOsToEntities(List<StateVO> states) {
+        return IbmShopMapper.parseListObjects(states, State.class, modelMapper);
+    }
+    //! --------------------------------------------------------------------------- Mapper methods
 
 }

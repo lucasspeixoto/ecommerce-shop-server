@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
-public class RegisterDTO {
+public class RegisterVO {
 
     @NotEmpty(message = "Name should not be null or empty")
     @Size(min = 3, message = "Name body must be minimum 3 characters")
@@ -24,10 +24,10 @@ public class RegisterDTO {
     @Size(min = 3, message = "Password body must be minimum 3 characters")
     private String password;
 
-    public RegisterDTO() {
+    public RegisterVO() {
     }
 
-    public RegisterDTO(String name, String username, String email, String password) {        this.name = name;
+    public RegisterVO(String name, String username, String email, String password) {        this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -68,7 +68,7 @@ public class RegisterDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RegisterDTO that)) return false;
+        if (!(o instanceof RegisterVO that)) return false;
         return Objects.equals(getName(), that.getName()) && Objects.equals(getUsername(), that.getUsername()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getPassword(), that.getPassword());
     }
 

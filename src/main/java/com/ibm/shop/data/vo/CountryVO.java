@@ -1,32 +1,35 @@
 package com.ibm.shop.data.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.springframework.hateoas.RepresentationModel;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 @JsonPropertyOrder({"id", "code", "name"})
-public class CountryVO extends RepresentationModel<CountryVO> implements Serializable {
+public class CountryVO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("id")
-    private Long key;
+    private Long id;
 
+    @NotEmpty
+    @Size(min = 2, message = "Country Code must be minimum 2 characters")
     private String code;
 
+    @NotEmpty
+    @Size(min = 3, message = "Name must be minimum 3 characters")
     private String name;
 
-    public Long getKey() {
-        return key;
+    public Long getId() {
+        return id;
     }
 
-    public void setKey(Long key) {
-        this.key = key;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCode() {
@@ -50,11 +53,11 @@ public class CountryVO extends RepresentationModel<CountryVO> implements Seriali
         if (this == o) return true;
         if (!(o instanceof CountryVO countryVO)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(getKey(), countryVO.getKey());
+        return Objects.equals(getId(), countryVO.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getKey());
+        return Objects.hash(super.hashCode(), getId());
     }
 }

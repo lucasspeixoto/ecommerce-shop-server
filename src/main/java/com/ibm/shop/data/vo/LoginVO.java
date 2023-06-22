@@ -2,16 +2,16 @@ package com.ibm.shop.data.vo;
 
 import java.util.Objects;
 
-public class LoginDTO {
+public class LoginVO {
 
     private String usernameOrEmail;
 
     private String password;
 
-    public LoginDTO() {
+    public LoginVO() {
     }
 
-    public LoginDTO(String usernameOrEmail, String password) {
+    public LoginVO(String usernameOrEmail, String password) {
         this.usernameOrEmail = usernameOrEmail;
         this.password = password;
     }
@@ -35,7 +35,7 @@ public class LoginDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LoginDTO loginDTO)) return false;
+        if (!(o instanceof LoginVO loginDTO)) return false;
         return Objects.equals(getUsernameOrEmail(), loginDTO.getUsernameOrEmail()) && Objects.equals(getPassword(), loginDTO.getPassword());
     }
 
