@@ -1,6 +1,7 @@
 package com.ibm.shop.controllers;
 
 import com.ibm.shop.data.response.JWTAuthResponse;
+import com.ibm.shop.data.response.RegisterResponse;
 import com.ibm.shop.data.vo.LoginVO;
 import com.ibm.shop.data.vo.RegisterVO;
 import com.ibm.shop.entities.User;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,7 +70,7 @@ public class AuthController {
                     )
             }
     )
-    public ResponseEntity<JWTAuthResponse> login(@RequestBody LoginVO loginVO) {
+    public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody LoginVO loginVO) {
         String token = authService.login(loginVO);
 
         JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
@@ -81,8 +83,8 @@ public class AuthController {
     // Register Rest API
     @PostMapping(value = {"/register", "/signup"})
     @Operation(
-            summary = "Login in the app",
-            description = "Service login the user",
+            summary = "Register in the app",
+            description = "Service for create a new user",
             tags = {"Authentication"},
             responses = {
                     @ApiResponse(
@@ -92,7 +94,7 @@ public class AuthController {
                                     @Content(
                                             mediaType = "application/json",
                                             array = @ArraySchema(
-                                                    schema = @Schema(implementation = String.class))
+                                                    schema = @Schema(implementation = RegisterResponse.class))
                                     )
                             }
                     ),
@@ -118,10 +120,16 @@ public class AuthController {
                     )
             }
     )
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterVO registerVO) {
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterVO registerVO) {
         String response = authService.register(registerVO);
 
-        return ResponseEntity.ok(response);
+        RegisterResponse registerResponse = new RegisterResponse();
+
+        registerResponse.setStatus(201);
+        registerResponse.setMessage("User created successfully");
+
+
+        return ResponseEntity.ok(registerResponse);
     }
 
 }
