@@ -50,6 +50,8 @@ public class ProductVO implements Serializable {
 
     private boolean newProduct;
 
+    private boolean onSale;
+
     private Double rating;
 
     private Integer categoryId;
@@ -99,6 +101,14 @@ public class ProductVO implements Serializable {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public boolean isOnSale() {
+        return onSale;
+    }
+
+    public void setOnSale(boolean onSale) {
+        this.onSale = onSale;
     }
 
     public void setImageUrl(String imageUrl) {

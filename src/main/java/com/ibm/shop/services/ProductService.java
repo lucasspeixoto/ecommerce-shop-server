@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -166,6 +167,22 @@ public class ProductService {
         productResponse.setLast(pageableProducts.isLast());
 
         return productResponse;
+    }
+
+    public List<ProductVO> findByFilters(Integer minPrice, Integer maxPrice, Integer rating, ArrayList<String> categories) throws Exception {
+        logger.info("Finding products by filters");
+
+        List<Product> products = repository.findByFilters(minPrice, maxPrice, rating, categories);
+
+        return convertEntitiesToDTOs(products);
+    }
+
+    public List<ProductVO> findOnSale() throws Exception {
+        logger.info("Finding products on sale");
+
+        List<Product> products = repository.findOnSale();
+
+        return convertEntitiesToDTOs(products);
     }
 
     public ProductVO delete(Long id) {

@@ -50,6 +50,9 @@ public class Product {
     @Column(name="new_product")
     private boolean newProduct;
 
+    @Column(name="on_sale")
+    private boolean onSale;
+
     @Column(name="rating")
     private Double rating;
 
@@ -160,6 +163,14 @@ public class Product {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public boolean isOnSale() {
+        return onSale;
+    }
+
+    public void setOnSale(boolean onSale) {
+        this.onSale = onSale;
     }
 
     @Override

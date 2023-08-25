@@ -17,10 +17,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping(value = "/api/products")
 @Tag(name = "Product", description = "Endpoints for Managing Products")
 public class ProductController {
+
+    private final Logger logger = Logger.getLogger(ProductService.class.getName());
 
     @Autowired
     private ProductService service;
@@ -247,6 +253,104 @@ public class ProductController {
     public ResponseEntity<ProductResponse> findByCategoryId(@PathVariable(value = "id") Long id, Pageable pageable) throws Exception {
 
         return ResponseEntity.ok(service.findByCategoryId(id, pageable));
+    }
+
+
+    @GetMapping(
+            value = "/findByFilters",
+            produces = {MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Finds products by filters V2",
+            description = "Service for find products by filters V2",
+            tags = {"Product"},
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(
+                                                    schema = @Schema(implementation = ProductVO.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            description = "Bad Request",
+                            responseCode = "400",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Unauthorized",
+                            responseCode = "401",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Not Found",
+                            responseCode = "404",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error",
+                            responseCode = "500",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<List<ProductVO>> findByFilters(
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) Integer rating,
+            @RequestParam(required = false) ArrayList<String> categories
+            ) throws Exception {
+
+        return ResponseEntity.ok(service.findByFilters(minPrice, maxPrice, rating, categories));
+    }
+
+    @GetMapping(
+            value = "/findOnSale",
+            produces = {MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Finds products on sale",
+            description = "Service for find products on sale",
+            tags = {"Product"},
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(
+                                                    schema = @Schema(implementation = ProductVO.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            description = "Bad Request",
+                            responseCode = "400",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Unauthorized",
+                            responseCode = "401",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Not Found",
+                            responseCode = "404",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error",
+                            responseCode = "500",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<List<ProductVO>> findOnSale() throws Exception {
+
+        return ResponseEntity.ok(service.findOnSale());
     }
 
     @GetMapping(

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   `last_updated` DATETIME(6) DEFAULT NULL,
   `category_id` BIGINT(20) NOT NULL,
   `new_product` tinyint(1) DEFAULT 0,
+  `on_sale` tinyint(1) DEFAULT 0,
   `rating` DECIMAL(13,2) DEFAULT 4.5,
   PRIMARY KEY (`id`)
 );
