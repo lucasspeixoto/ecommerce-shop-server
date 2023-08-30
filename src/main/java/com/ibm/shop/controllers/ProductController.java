@@ -3,6 +3,7 @@ package com.ibm.shop.controllers;
 import com.ibm.shop.data.response.ProductResponse;
 import com.ibm.shop.data.vo.ProductVO;
 import com.ibm.shop.services.ProductService;
+import com.ibm.shop.utils.AppConstants;
 import com.ibm.shop.utils.MediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -255,7 +256,6 @@ public class ProductController {
         return ResponseEntity.ok(service.findByCategoryId(id, pageable));
     }
 
-
     @GetMapping(
             value = "/findByFilters",
             produces = {MediaType.APPLICATION_JSON})
@@ -446,5 +446,51 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(
+            value = "/findByOrder",
+            produces = {MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Finds products by order",
+            description = "Service for find products by order (asc or desc)",
+            tags = {"Product"},
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(
+                                                    schema = @Schema(implementation = ProductVO.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            description = "Bad Request",
+                            responseCode = "400",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Unauthorized",
+                            responseCode = "401",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Not Found",
+                            responseCode = "404",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error",
+                            responseCode = "500",
+                            content = @Content
+                    )
+            }
+    )
+    public ResponseEntity<ProductResponse> findByOrder(
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir, Pageable pageable) throws Exception {
 
+        return ResponseEntity.ok(service.findByOrder(sortBy, sortDir, pageable));
+    }
 }

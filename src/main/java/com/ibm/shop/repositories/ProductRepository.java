@@ -38,4 +38,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                     WHERE p.name LIKE %:name
             """)
     Page<Product> findByNameContaining(@Param("name") String name, Pageable pageable);
+
 }

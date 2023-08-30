@@ -9,7 +9,9 @@ import com.ibm.shop.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.stereotype.Service;
 
@@ -129,8 +131,38 @@ public class ProductService {
     public ProductResponse findByCategoryId(Long id, Pageable pageable) throws Exception {
         logger.info("Finding products by specific category id");
 
-
         Page<Product> pageableProducts = repository.findByCategoryId(id, pageable);
+
+        List<Product> pageableProductContent = pageableProducts.getContent();
+
+        List<ProductVO> content = convertEntitiesToDTOs(pageableProductContent);
+
+        ProductResponse productResponse = new ProductResponse();
+
+        productResponse.setContent(content);
+        productResponse.setPageNo(pageableProducts.getNumber());
+        productResponse.setPageSize(pageableProducts.getSize());
+        productResponse.setTotalElements(pageableProducts.getTotalElements());
+        productResponse.setTotalPages(pageableProducts.getTotalPages());
+        productResponse.setLast(pageableProducts.isLast());
+
+        return productResponse;
+    }
+
+    public ProductResponse findByOrder(String sortBy, String sortDir, Pageable pageable) throws Exception {
+        logger.info("Finding products by order (desc or asc)");
+
+        Sort _sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
+
+        Pageable _pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                _sort
+        );
+
+        Page<Product> pageableProducts = repository.findAll(_pageable);
 
         List<Product> pageableProductContent = pageableProducts.getContent();
 
